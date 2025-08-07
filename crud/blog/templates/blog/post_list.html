@@ -9,3 +9,20 @@
     </li>
   {% endfor %}
 </ul>
+<!-- blog/templates/blog/post_list.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All Blog Posts</title>
+</head>
+<body>
+    <h1>All Blog Posts</h1>
+    <ul>
+        {% for post in posts %}
+            <li>{{ post.title }} - {{ post.content }}</li>
+        {% empty %}
+            <li>No posts found.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
