@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Blog Auth</title>
+</head>
+<body>
+    {% if user.is_authenticated %}
+        <p>Welcome, {{ user.username }} | <a href="{% url 'create_blog' %}">Create Blog</a> |
+        <a href="{% url 'my_blogs' %}">My Blogs</a> |
+        <a href="{% url 'all_blogs' %}">All Blogs</a> |
+        <a href="{% url 'logout' %}">Logout</a></p>
+    {% else %}
+        <p><a href="{% url 'login' %}">Login</a> |
+        <a href="{% url 'signup' %}">Signup</a></p>
+    {% endif %}
+    <hr>
+    {% block content %}{% endblock %}
+</body>
+</html>
