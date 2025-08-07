@@ -1,35 +1,35 @@
-from django.shortcuts import render
-from django.http  import HttpResponse 
-from .models import Question
-from django.http import Http404
-from django.template import loader
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render 
+from django.urls import reverse 
+from django.views import generic 
+from .models import Choice, Question
 
-
-
-def detail(request, question_i):
-    try:
-        question = Question.objects.get(pk = question_i)
-    except Question.DoesNotExist:
-        raise Http404("Quotatio does not exist")
-    question = {
-        'question': question
-    }
-    return render(request, 'polls/detail.html', question )
-        
-
-def results(request, question_id):
-    response = "You are looking at results of question %s."
-    return HttpResponse(response % question_id)
+class IndexView(generic.ListView):
+    template_name = 'polls/index.html'
+    context_object_name = 'latest_question_list'
+    
+    def get_quesryset(self):
+        return Question.objects.order_by('-pub_date')[:5]
+    
+class DetailView(generic.DetailView):
+    model = Question
+    template_name = 'polls/detail.htmnl'`
+    
+class ResultsView(generic.Detailview):
+    model = Question
+    template_name = 'polls/results.html'
     
 def vote(request, question_id):
-    return HttpResponse(f"you are voting on question {question_id}.")
-
-
-def index(request):
-    latest_question_list = Question.objects.order_by('-pub_date')[:]
-    # context to pass data from view to template 
-    context = {
-        'latest_question_list': latest_question_list
-    }
-    return render(request, 'polls/index.html', context)
-
+    question = get_object_or_404(Question, pk = question_id)
+    try:
+        selected_choice = question.choice_set(pk= request.POST['choice'])
+    except (KeyError, Choice.DoesNotExist):
+        return render(request, 'polls/detial.html', {
+            'question': question,
+            'error_message':'Do select a choice',
+        })
+    else:
+        selected_choice.votes += 1
+        selected_choice.save()
+        
+        return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))

@@ -1,0 +1,11 @@
+<h2>Posts</h2>
+<a href="{% url 'post_create' %}">Create New Post</a>
+<ul>
+  {% for post in posts %}
+    <li>
+      {{ post.title }} - {{ post.created_at }}
+      <a href="{% url 'post_update' post.pk %}">Edit</a>
+      <a href="{% url 'post_delete' post.pk %}">Delete</a>
+    </li>
+  {% endfor %}
+</ul>
