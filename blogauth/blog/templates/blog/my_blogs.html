@@ -1,11 +1,58 @@
 {% extends 'blog/base.html' %}
 {% block content %}
 <h2>My Blogs</h2>
+
+<!-- Search and Filter Form -->
+<div style="background: #f5f5f5; padding: 20px; margin-bottom: 20px; border-radius: 5px;">
+    <form method="GET" action="{% url 'my_blogs' %}">
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+            <!-- Search -->
+            <input type="text" name="search" value="{{ search_query }}" 
+                   placeholder="Search my blogs..." style="padding: 8px; border: 1px solid #ddd; border-radius: 3px;">
+            
+            <!-- Sort -->
+            <select name="sort" style="padding: 8px; border: 1px solid #ddd; border-radius: 3px;">
+                <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Newest First</option>
+                <option value="oldest" {% if sort_by == 'oldest' %}selected{% endif %}>Oldest First</option>
+                <option value="title" {% if sort_by == 'title' %}selected{% endif %}>By Title</option>
+            </select>
+            
+            <!-- Date Filter -->
+            <select name="date_filter" style="padding: 8px; border: 1px solid #ddd; border-radius: 3px;">
+                <option value="">All Time</option>
+                <option value="today" {% if date_filter == 'today' %}selected{% endif %}>Today</option>
+                <option value="week" {% if date_filter == 'week' %}selected{% endif %}>This Week</option>
+                <option value="month" {% if date_filter == 'month' %}selected{% endif %}>This Month</option>
+            </select>
+            
+            <!-- Submit Button -->
+            <button type="submit" style="padding: 8px 16px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">
+                Apply Filters
+            </button>
+            
+            <!-- Clear Filters -->
+            <a href="{% url 'my_blogs' %}" style="padding: 8px 16px; background: #6c757d; color: white; text-decoration: none; border-radius: 3px;">
+                Clear
+            </a>
+        </div>
+    </form>
+</div>
+
+<!-- Results Count -->
+<p><strong>{{ blogs.count }}</strong> blog{{ blogs.count|pluralize }} found</p>
+
+<!-- Blogs List -->
 {% for blog in blogs %}
-  <h3>{{ blog.title }}</h3>
-  <p>{{ blog.content }}</p>
-  <a href="{% url 'edit_blog' blog.pk %}">Edit</a> |
-  <a href="{% url 'delete_blog' blog.pk %}">Delete</a>
-  <hr>
+  <div style="border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; border-radius: 5px;">
+    <h3>{{ blog.title }}</h3>
+    <p>{{ blog.content|truncatewords:50 }}</p>
+    <p><em>Created on {{ blog.created_at|date:"F j, Y" }}</em></p>
+    <div style="margin-top: 10px;">
+      <a href="{% url 'edit_blog' blog.pk %}" style="padding: 5px 10px; background: #28a745; color: white; text-decoration: none; border-radius: 3px; margin-right: 10px;">Edit</a>
+      <a href="{% url 'delete_blog' blog.pk %}" style="padding: 5px 10px; background: #dc3545; color: white; text-decoration: none; border-radius: 3px;" onclick="return confirm('Are you sure?')">Delete</a>
+    </div>
+  </div>
+{% empty %}
+  <p>No blogs found matching your criteria.</p>
 {% endfor %}
 {% endblock %}
